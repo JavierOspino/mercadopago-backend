@@ -1,24 +1,21 @@
-import { Controller, Get, UseGuards, Request, Post, Body, Param } from '@nestjs/common';
+import { Controller, Get, UseGuards, Request, Post, Body, Param, Patch } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { CreateUserDto } from './dto/createUser.dto';
+import { UserService } from './user.service';
 
 @Controller('user')
 export class UserController {
-  [x: string]: any;
+  constructor(private readonly userService: UserService) {}
+
   @Get('profile')
   @UseGuards(AuthGuard('jwt'))
   getProfile(@Request() req: any) {
     return req.user; 
   }
-
-  @Post('register')
-  async create(@Body() createUserDto: CreateUserDto) {
-    return this.userService.create(createUserDto);
-  }
-
+  
   @Get(':id')
-  async findById(@Param('id') id: number) {
-    return this.userService.findById(id);
+  async findById(@Param('id') id: string) {
+    return this.userService.findOne(id);
   }
 
   @Get('email/:email')
@@ -27,8 +24,18 @@ export class UserController {
   }
 
   @Get()
-  @UseGuards(AuthGuard('jwt')) 
+  //@UseGuards(AuthGuard('jwt')) 
   async findAll() {
     return this.userService.findAll();
+  }
+
+  @Post('register')
+  async create(@Body() createUserDto: CreateUserDto) {
+    return this.userService.createUser(createUserDto);
+  } 
+  
+  @Patch(':id')
+  async update(@Param('id') id: string, @Body() updateUserDto: any) {
+    return this.userService.update(id, updateUserDto);
   }
 }
