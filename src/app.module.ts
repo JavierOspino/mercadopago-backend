@@ -4,7 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import { User } from './users/user.entity';
 import { UserController } from './users/user.controller';
 import { UserService } from './users/user.service';
-import { UsersModule } from './users/user.module';
+import { UserModule } from './users/user.module';
 
 @Module({
   imports: [
@@ -22,7 +22,7 @@ import { UsersModule } from './users/user.module';
       }),
     }),
     TypeOrmModule.forFeature([User]),
-    UsersModule,
+    UserModule,
   ],
   controllers: [UserController],
   providers: [UserService],
