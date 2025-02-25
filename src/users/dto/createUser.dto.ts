@@ -1,8 +1,8 @@
-import { IsEmail, IsNotEmpty, MinLength, IsOptional, IsBoolean } from 'class-validator';
+import { IsEmail, IsNotEmpty, MinLength, IsOptional, IsBoolean, IsEnum } from 'class-validator';
+import { UserRole } from '../user.entity';
 
 export class CreateUserDto {
-
-
+  
   @IsEmail({}, { message: 'El email no es válido' })
   @IsNotEmpty({ message: 'El email es obligatorio' })
   email?: string;
@@ -14,4 +14,7 @@ export class CreateUserDto {
   @IsBoolean({ message: 'isActive debe ser un booleano' })
   @IsOptional()
   isActive?: boolean;
+
+  @IsEnum(UserRole)
+  role!: UserRole;
 }
