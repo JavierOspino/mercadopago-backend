@@ -6,9 +6,9 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-@Entity('users') // Nombre de la tabla en la DB
+@Entity('users') 
 export class User {
-  @PrimaryGeneratedColumn('uuid') // Usa UUID en lugar de números secuenciales
+  @PrimaryGeneratedColumn('uuid') 
   id?: string;
 
   @Column({ type: 'varchar', length: 255, unique: true })
@@ -20,10 +20,10 @@ export class User {
   @Column({ type: 'boolean', default: true })
   isActive?: boolean;
 
-  @CreateDateColumn({ type: 'timestamp' }) // Automático en la creación
+  @CreateDateColumn({ type: 'timestamp' }) 
   createdAt?: Date;
 
-  @UpdateDateColumn({ type: 'timestamp' }) // Automático en cada actualización
+  @UpdateDateColumn({ type: 'timestamp' }) 
   updatedAt?: Date;
 }
 

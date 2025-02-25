@@ -1,4 +1,11 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Get, UseGuards, Request } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 
-@Controller('users')
-export class UsersController {}
+@Controller('user')
+export class UserController {
+  @Get('profile')
+  @UseGuards(AuthGuard('jwt'))
+  getProfile(@Request() req: any) {
+    return req.user; // Devuelve los datos del usuario autenticado
+  }
+}
