@@ -6,8 +6,14 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
+export enum UserRole {
+  ADMIN = 'admin',
+  USER = 'user',
+}
+
 @Entity('users') 
 export class User {
+
   @PrimaryGeneratedColumn('uuid') 
   id?: string;
 
@@ -25,5 +31,8 @@ export class User {
 
   @UpdateDateColumn({ type: 'timestamp' }) 
   updatedAt?: Date;
+
+  @Column({ type: 'enum', enum: UserRole, default: UserRole.USER })
+  role!: UserRole;
 }
 
