@@ -1,6 +1,4 @@
 import { IsEmail, IsNotEmpty, MinLength, IsOptional, IsBoolean } from 'class-validator';
-import { BeforeInsert } from 'typeorm';
-import * as bcrypt from 'bcrypt';
 
 export class CreateUserDto {
 
@@ -16,10 +14,4 @@ export class CreateUserDto {
   @IsBoolean({ message: 'isActive debe ser un booleano' })
   @IsOptional()
   isActive?: boolean;
-
-  @BeforeInsert()
-  async hashPassword() {
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
-  }
 }
