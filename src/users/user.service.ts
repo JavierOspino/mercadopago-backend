@@ -28,32 +28,45 @@ export class UserService {
 
   async findAll(): Promise<User[]> {
     return await this.userRepository.find();
+  
   }
-
-  async findOne(id: string): Promise<User> {
-    const user = await this.userRepository.findOne({ where: { id } });
+  
+  async findById(id: string): Promise<User> {
+    const user = await this.userRepository.findOneBy({ id });
     if (!user) {
-      throw new NotFoundException(`User with ID ${id} not found`);
+      throw new NotFoundException('User not found');
     }
     return user;
   }
-
+  
   async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
-    const user = await this.findOne(id);
+    const user = await this.findById(id);
     Object.assign(user, updateUserDto);
     return this.userRepository.save(user);
   }
-
+  
   async remove(id: string): Promise<void> {
-    const user = await this.findOne(id);
+    const user = await this.findById(id);
     await this.userRepository.remove(user);
   }
 
-  async findByEmail(email: string): Promise<User | null> {
-    return this.userRepository.findOne({ where: { email } });
+  async findByEmail(email: string): Promise<any> {
+    return await this.userRepository.findOne({ where: { email } });
   }
-
+  
   async validatePassword(password: string, hashedPassword: string): Promise<boolean> {
     return bcrypt.compare(password, hashedPassword);
+  }
+
+  async updateRefreshToken(userId: string, refreshToken: string) {
+    await this.userRepository.update(userId, { refreshToken });
+  }
+
+  async findByRefreshToken(refreshToken: string ): Promise<User | null> {
+    return this.userRepository.findOne({ where: { refreshToken } });
+  }
+
+  async removeRefreshToken(userId: string){
+    await this.userRepository.update(userId, { refreshToken: undefined });
   }
 }

@@ -15,7 +15,7 @@ export enum UserRole {
 export class User {
 
   @PrimaryGeneratedColumn('uuid') 
-  id?: string;
+  id!: string;
 
   @Column({ type: 'varchar', length: 255, unique: true })
   email?: string;
@@ -34,5 +34,7 @@ export class User {
 
   @Column({ type: 'enum', enum: UserRole, default: UserRole.USER })
   role!: UserRole;
-}
 
+  @Column({ nullable: true, type: 'text' })
+  refreshToken!: string | undefined;
+}
