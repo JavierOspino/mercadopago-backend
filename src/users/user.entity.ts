@@ -4,7 +4,9 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
+import { Payment } from '../mercadopago/payments/payment.entity';
 
 export enum UserRole {
   ADMIN = 'admin',
@@ -34,4 +36,7 @@ export class User {
 
   @Column({ type: 'enum', enum: UserRole, default: UserRole.USER })
   role!: UserRole;
+
+  @OneToMany(() => Payment, (payment) => payment.user)
+  payments!: Payment[];
 }
