@@ -45,4 +45,29 @@ export class MercadoPagoService {
       throw new Error(`Error al procesar el pago: ${error.response?.data?.message || error.message}`);
     }
   }
+
+  async processPayment(paymentId: string) {
+    try {
+      console.log(`🔍 Consultando detalles del pago: ${paymentId}`);
+
+      const response = await axios.get(`${this.mercadoPagoUrl}/${paymentId}`, {
+        headers: {
+          Authorization: `Bearer ${this.accessToken}`,
+        },
+      });
+
+      const paymentInfo = response.data;
+      console.log('✅ Información del pago:', paymentInfo);
+
+      // Verifica si el pago fue aprobado
+      if (paymentInfo.status === 'approved') {
+        console.log('💰 Pago aprobado. Actualizando base de datos...');
+        // Aquí actualizas tu base de datos con la información del pago
+      } else {
+        console.log('⚠️ El pago no fue aprobado:', paymentInfo.status);
+      }
+    } catch (error) {
+      console.error('❌ Error al consultar el pago:', (error as any).response?.data || (error as any).message);
+    }
+  }
 }

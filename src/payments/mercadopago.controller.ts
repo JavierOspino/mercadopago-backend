@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Headers } from '@nestjs/common';
+import { Controller, Post, Body, Res } from '@nestjs/common';
 import { MercadoPagoService } from './mercadopago.service';
 
 @Controller('mercadopago')
@@ -11,10 +11,18 @@ export class MercadoPagoController {
   }
 
   @Post('webhook')
-  async handleWebhook(@Body() data: any, @Headers('x-signature') signature: string) {
-    console.log('🔔 Webhook recibido:', data);
-    console.log('🔑 Firma:', signature);
+  async handleWebhook(@Res() res: any, @Body() body: any) {
+    console.log('📩 Webhook recibido:', JSON.stringify(body, null, 2));
 
-    return { message: 'Webhook recibido con éxito' };
+    // Verifica si es un evento de pago
+    if (body.action === 'payment.created' || body.type === 'payment') {
+      const paymentId = body.data.id;
+      console.log('🔹 Pago recibido con ID:', paymentId);
+
+      // Llamar servicio para procesar el pago
+      await this.mercadoPagoService.processPayment(paymentId);
+    }
+
+    return res.status(200).send({ message: 'Webhook recibido correctamente' });
   }
 }
