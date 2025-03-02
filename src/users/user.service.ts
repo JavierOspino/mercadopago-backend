@@ -50,23 +50,11 @@ export class UserService {
     await this.userRepository.remove(user);
   }
 
-  async findByEmail(email: string): Promise<any> {
+  async findByEmail(email: string): Promise<User | null> {
     return await this.userRepository.findOne({ where: { email } });
   }
   
   async validatePassword(password: string, hashedPassword: string): Promise<boolean> {
     return bcrypt.compare(password, hashedPassword);
-  }
-
-  async updateRefreshToken(userId: string, refreshToken: string) {
-    await this.userRepository.update(userId, { refreshToken });
-  }
-
-  async findByRefreshToken(refreshToken: string ): Promise<User | null> {
-    return this.userRepository.findOne({ where: { refreshToken } });
-  }
-
-  async removeRefreshToken(userId: string){
-    await this.userRepository.update(userId, { refreshToken: undefined });
   }
 }

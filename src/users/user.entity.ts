@@ -21,7 +21,7 @@ export class User {
   email?: string;
 
   @Column({ type: 'varchar', length: 255 }) 
-  password?: string;
+  password!: string;
 
   @Column({ type: 'boolean', default: true })
   isActive?: boolean;
@@ -34,7 +34,4 @@ export class User {
 
   @Column({ type: 'enum', enum: UserRole, default: UserRole.USER })
   role!: UserRole;
-
-  @Column({ nullable: true, type: 'text' })
-  refreshToken!: string | undefined;
 }
