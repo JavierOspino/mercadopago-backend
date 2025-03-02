@@ -6,6 +6,7 @@ import { UserController } from './users/user.controller';
 import { UserService } from './users/user.service';
 import { UserModule } from './users/user.module';
 import { AuthModule } from './auth/auth.module';
+import { MercadoPagoModule } from './payments/mercadopago.module';
 
 @Module({
   imports: [
@@ -24,7 +25,8 @@ import { AuthModule } from './auth/auth.module';
     }),
     TypeOrmModule.forFeature([User]),
     UserModule,
-    AuthModule
+    AuthModule,
+    MercadoPagoModule,
   ],
   controllers: [UserController],
   providers: [UserService],
