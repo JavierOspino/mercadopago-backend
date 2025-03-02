@@ -2,7 +2,6 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../users/user.service';
 import { LoginDto } from './dto/login.dto';
-import { User } from '../users/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -11,15 +10,15 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async validateUser(email: string, password: string): Promise<User> {
+  async validateUser(email: string, password: string): Promise<any> {
     const user = await this.userService.findByEmail(email);
     if (!user) {
       throw new UnauthorizedException('Usuario no encontrado');
     }
 
-    const isPasswordValid = await this.userService.validatePassword(password, String(user.password));
+    const isPasswordValid = this.userService.validatePassword(password, user.password);
     if (!isPasswordValid) {
-        throw new UnauthorizedException('Contraseña incorrecta');
+      throw new UnauthorizedException('Contraseña incorrecta');
     }
 
     return user;
@@ -33,9 +32,13 @@ export class AuthService {
       throw new UnauthorizedException('Credenciales incorrectas');
     }
 
-    const payload = { email: user.email, sub: user.id, role: user.role };
+    const payload = { sub: user.id, email: user.email, role: user.role};
     const accessToken = this.jwtService.sign(payload);
 
     return { accessToken };
+  }
+
+  async logout() {
+    return { message: 'Sesión cerrada' };
   }
 }
