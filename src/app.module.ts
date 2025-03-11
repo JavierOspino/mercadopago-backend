@@ -7,7 +7,7 @@ import { UserService } from './users/services/user.service';
 import { UserModule } from './users/user.module';
 import { AuthModule } from './auth/auth.module';
 import { MercadoPagoModule } from './payments/mercadopago.module';
-import { PaymentsModule } from './payments/payments.module';
+import { PaymentModule } from './payments/payment.module';
 
 @Module({
   imports: [
@@ -28,7 +28,7 @@ import { PaymentsModule } from './payments/payments.module';
     UserModule,
     AuthModule,
     MercadoPagoModule,
-    PaymentsModule,
+    PaymentModule,
   ],
   controllers: [UserController],
   providers: [UserService],
