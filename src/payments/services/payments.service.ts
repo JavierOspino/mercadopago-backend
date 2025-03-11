@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { PaymentRepository } from './payment.repo';
-import { UserService } from '../../users/user.service';
+import { PaymentRepository } from '../repositories/payment.repo';
+import { UserService } from '../../users/services/user.service';
 
 @Injectable()
 export class PaymentsService {
@@ -32,6 +32,6 @@ export class PaymentsService {
       amount: transaction_amount,
     });
 
-    console.log('✅ Pago guardado en la base de datos');
+    console.log('Pago guardado en la base de datos');
   }
 }

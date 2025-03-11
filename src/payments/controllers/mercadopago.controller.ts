@@ -1,5 +1,5 @@
 import { Controller, Post, Body, Res } from '@nestjs/common';
-import { MercadoPagoService } from './mercadopago.service';
+import { MercadoPagoService } from '../services/mercadopago.service';
 
 @Controller('mercadopago')
 export class MercadoPagoController {

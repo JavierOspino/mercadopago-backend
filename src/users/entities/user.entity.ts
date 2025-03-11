@@ -6,7 +6,7 @@ import {
   UpdateDateColumn,
   OneToMany,
 } from 'typeorm';
-import { Payment } from '../mercadopago/payments/payment.entity';
+import { Payment } from '../../payments/entities/payment.entity';
 
 export enum UserRole {
   ADMIN = 'admin',

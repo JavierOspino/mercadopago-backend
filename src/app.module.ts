@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
-import { User } from './users/user.entity';
-import { UserController } from './users/user.controller';
-import { UserService } from './users/user.service';
+import { User } from './users/entities/user.entity';
+import { UserController } from './users/controllers/user.controller';
+import { UserService } from './users/services/user.service';
 import { UserModule } from './users/user.module';
 import { AuthModule } from './auth/auth.module';
-import { MercadoPagoModule } from './mercadopago/mercadopago.module';
-import { PaymentsModule } from './mercadopago/payments/payments.module';
+import { MercadoPagoModule } from './payments/mercadopago.module';
+import { PaymentsModule } from './payments/payments.module';
 
 @Module({
   imports: [

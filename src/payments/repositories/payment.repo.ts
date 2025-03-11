@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
-import { Payment } from './payment.entity';
+import { Payment } from '../entities/payment.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
@@ -17,5 +17,9 @@ export class PaymentRepository {
 
   async findPaymentById(paymentId: string): Promise<Payment | null> {
     return this.paymentRepo.findOne({ where: { paymentId } });
+  }
+
+  async updatePaymentStatus(paymentId: string, status: string): Promise<void> {
+    await this.paymentRepo.update(paymentId, { status });
   }
 }
