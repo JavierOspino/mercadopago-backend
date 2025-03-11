@@ -1,28 +1,49 @@
-import { Controller, Post, Body, Res } from '@nestjs/common';
+import { Controller, Post, Get, Param, Body, Req } from '@nestjs/common';
 import { MercadoPagoService } from '../services/mercadopago.service';
+import { PaymentService } from '../services/payment.service';
 
-@Controller('mercadopago')
+@Controller('payments')
 export class MercadoPagoController {
-  constructor(private readonly mercadoPagoService: MercadoPagoService) {}
+  constructor(
+    private readonly mercadoPagoService: MercadoPagoService,
+    private readonly paymentService: PaymentService,
+  ) {}
 
-  @Post('payment')
-  async createCheckout(@Body() body: { amount: number; description: string; email: string }) {
-    return await this.mercadoPagoService.createCheckout(body.amount, body.description, body.email);
+  @Post()
+  async createPayment(@Body() paymentDto: any) {
+    // Crear pago en MercadoPago
+    const paymentResponse = await this.mercadoPagoService.createCheckout(
+      paymentDto.amount,
+      paymentDto.description,
+      paymentDto.email,
+    );
+
+    // Almacenar información del pago en la base de datos
+    await this.paymentService.savePayment({
+      paymentId: paymentResponse.id,
+      status: 'pending',
+      amount: paymentDto.amount,
+      email: paymentDto.email,
+    });
+
+    return { init_point: paymentResponse.init_point };
   }
 
-  @Post('webhook')
-  async handleWebhook(@Res() res: any, @Body() body: any) {
-    console.log('📩 Webhook recibido:', JSON.stringify(body, null, 2));
+  @Get(':id')
+  async getPayment(@Param('id') paymentId: string) {
+    return this.paymentService.getPaymentById(paymentId);
+  }
 
-    // Verifica si es un evento de pago
-    if (body.action === 'payment.created' || body.type === 'payment') {
-      const paymentId = body.data.id;
-      console.log('🔹 Pago recibido con ID:', paymentId);
-
-      // Llamar servicio para procesar el pago
-      await this.mercadoPagoService.processPayment(paymentId);
+  @Post('webhooks')
+  async handleWebhook(@Req() req: any) {
+    const paymentData = req.body;
+    
+    if (paymentData.action === 'payment.created' || paymentData.action === 'payment.updated') {
+      await this.paymentService.updatePaymentStatus(
+        paymentData.data.id,
+        paymentData.data.status
+      );
     }
-
-    return res.status(200).send({ message: 'Webhook recibido correctamente' });
+    return { message: 'Webhook recibido' };
   }
 }

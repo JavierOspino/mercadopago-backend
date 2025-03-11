@@ -3,7 +3,7 @@ import { PaymentRepository } from '../repositories/payment.repo';
 import { UserService } from '../../users/services/user.service';
 
 @Injectable()
-export class PaymentsService {
+export class PaymentService {
   constructor(
     private readonly paymentRepository: PaymentRepository,
     private readonly userService: UserService,
@@ -33,5 +33,17 @@ export class PaymentsService {
     });
 
     console.log('Pago guardado en la base de datos');
+  }
+
+  async getPaymentById(paymentId: string) {
+    return this.paymentRepository.findPaymentById(paymentId);
+  }
+
+  async savePayment(paymentData: any) {
+    return this.paymentRepository.createPayment(paymentData);
+  }
+
+  async updatePaymentStatus(paymentId: string, status: string) {
+    return this.paymentRepository.updatePaymentStatus(paymentId, status);
   }
 }

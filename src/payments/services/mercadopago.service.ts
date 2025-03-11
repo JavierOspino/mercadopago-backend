@@ -31,6 +31,31 @@ export class MercadoPagoService {
     }
   }
 
+  async createCheckout(amount: number, description: string, email: string) {
+    try {
+      const response = await axios.post(
+        this.mercadoPagoUrl,
+        {
+          transaction_amount: amount,
+          description,
+          payment_method_id: 'pix', // o cualquier otro método permitido
+          payer: { email },
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${this.accessToken}`,
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+      return response.data;
+    }
+    catch (error) {
+      const errorPayment = new PaymentNotFoundException('Error al procesar el pago');
+      throw errorPayment;
+    }
+  }
+
   async getPaymentStatus(paymentId: string) {
       try {
         const response = await axios.get(`${this.mercadoPagoUrl}/${paymentId}`, {
