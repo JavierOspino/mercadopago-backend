@@ -1,34 +1,14 @@
-import { Injectable } from '@nestjs/common';
-import { PaymentNotFoundException } from '../../common/exceptions/payment-not-found.exception';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import axios from 'axios';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class MercadoPagoService {
-  private readonly mercadoPagoUrl = 'https://api.mercadopago.com/v1/payments';
-  private readonly accessToken = process.env.MERCADOPAGO_ACCESS_TOKEN;
+  private readonly mercadoPagoUrl = 'https://api.mercadopago.com/checkout/preferences';
+  private readonly accessToken: string;
 
-  async createPayment(amount: number, description: string, email: string) {
-    try {
-      const response = await axios.post(
-        this.mercadoPagoUrl,
-        {
-          transaction_amount: amount,
-          description,
-          payment_method_id: 'pix', // o cualquier otro método permitido
-          payer: { email },
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${this.accessToken}`,
-            'Content-Type': 'application/json',
-          },
-        },
-      );
-      return response.data;
-    } catch (error) {
-      const errorPayment = new PaymentNotFoundException('Error al procesar el pago');
-      throw errorPayment;
-    }
+  constructor(private readonly configService: ConfigService) {
+    this.accessToken = this.configService.get<string>('MERCADOPAGO_ACCESS_TOKEN') || '';
   }
 
   async createCheckout(amount: number, description: string, email: string) {
@@ -36,35 +16,35 @@ export class MercadoPagoService {
       const response = await axios.post(
         this.mercadoPagoUrl,
         {
-          transaction_amount: amount,
-          description,
-          payment_method_id: 'pix', // o cualquier otro método permitido
+          items: [{ title: description, quantity: 1, unit_price: amount, currency_id: 'COP' }],
           payer: { email },
+          back_urls: { success: ' https://223f-181-51-88-64.ngrok-free.app/success', failure: ' https://223f-181-51-88-64.ngrok-free.app/failure' },
+          auto_return: 'approved',
         },
-        {
-          headers: {
-            Authorization: `Bearer ${this.accessToken}`,
-            'Content-Type': 'application/json',
-          },
-        },
+        { headers: { Authorization: `Bearer ${this.accessToken}`, 'Content-Type': 'application/json' } },
       );
       return response.data;
-    }
-    catch (error) {
-      const errorPayment = new PaymentNotFoundException('Error al procesar el pago');
-      throw errorPayment;
+    } catch (error) {
+      throw new InternalServerErrorException('Error al crear la preferencia de pago');
     }
   }
 
-  async getPaymentStatus(paymentId: string) {
-      try {
-        const response = await axios.get(`${this.mercadoPagoUrl}/${paymentId}`, {
-          headers: { Authorization: `Bearer ${this.accessToken}` },
-        });
-        return response.data.status;
-      } catch (error) {
-        const errorPayment = new PaymentNotFoundException('Error al obtener el estado del pago');
-        throw errorPayment;
+  async getPaymentDetails(paymentId: string) {
+    try {
+      const response = await axios.get(`https://api.mercadopago.com/v1/payments/${paymentId}`, {
+        headers: {
+          Authorization: `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`,
+        },
+      });
+
+      return response.data;
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        console.error('❌ Error al obtener detalles del pago:', error.response?.data || error.message);
+      } else {
+        console.error('❌ Error desconocido:', error);
       }
+      return null;
     }
   }
+}
