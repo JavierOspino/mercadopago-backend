@@ -13,6 +13,12 @@ export class Payment {
     user!: User;
 
   @Column()
+    description!: string; // Descripción del pago
+
+  @Column()
+    email!: string; // Email del usuario que pagó
+
+  @Column()
     status!: string; // 'approved', 'pending', 'rejected'
 
   @Column('decimal', { precision: 10, scale: 2 })

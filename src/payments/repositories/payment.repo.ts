@@ -20,6 +20,6 @@ export class PaymentRepository {
   }
 
   async updatePaymentStatus(paymentId: string, status: string): Promise<void> {
-    await this.paymentRepo.update(paymentId, { status });
+    await this.paymentRepo.update({ paymentId }, { status });
   }
 }
