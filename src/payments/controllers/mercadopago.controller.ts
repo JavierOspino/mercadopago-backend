@@ -5,13 +5,18 @@ import { PaymentService } from '../services/payment.service';
 export class MercadoPagoController {
   constructor(private readonly paymentService: PaymentService) {}
 
-  @Post('webhook')
+  @Post('webhook') // 👈 Esto define '/mercadopago/webhook'
   @HttpCode(200)
   async handleWebhook(@Body() data: any) {
-    const { action, data: { id: paymentId } } = data;
-    if (action === 'payment.updated') {
-      await this.paymentService.getPaymentStatus(paymentId);
+    console.log('📩 Webhook recibido:', JSON.stringify(data, null, 2));
+
+    const { action, data: { id: paymentId } = {} } = data || {};
+
+    if (action === 'payment.updated' && paymentId) {
+      await this.paymentService.updatePaymentStatus(paymentId);
     }
+
+    return { message: 'Webhook recibido' };
   }
 
   @Post('checkout')
