@@ -4,11 +4,13 @@ import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class MercadoPagoService {
-  private readonly mercadoPagoUrl = 'https://api.mercadopago.com/checkout/preferences';
+  private readonly mercadoPagoUrl: string = 'https://api.mercadopago.com/checkout/preferences';
   private readonly accessToken: string;
+  private readonly urlSite: string;
 
   constructor(private readonly configService: ConfigService) {
     this.accessToken = this.configService.get<string>('MERCADOPAGO_ACCESS_TOKEN') || '';
+    this.urlSite = this.configService.get<string>('URL_SITE') || '';
   }
 
   async createCheckout(amount: number, description: string, email: string) {
@@ -18,10 +20,18 @@ export class MercadoPagoService {
         {
           items: [{ title: description, quantity: 1, unit_price: amount, currency_id: 'COP' }],
           payer: { email },
-          back_urls: { success: ' https://223f-181-51-88-64.ngrok-free.app/success', failure: ' https://223f-181-51-88-64.ngrok-free.app/failure' },
+          back_urls: {
+            success: this.urlSite + '/success',
+            failure: this.urlSite + '/failure',
+          },
           auto_return: 'approved',
         },
-        { headers: { Authorization: `Bearer ${this.accessToken}`, 'Content-Type': 'application/json' } },
+        {
+          headers: {
+            Authorization: `Bearer ${this.accessToken}`,
+            'Content-Type': 'application/json',
+          },
+        },
       );
       return response.data;
     } catch (error) {
@@ -40,7 +50,10 @@ export class MercadoPagoService {
       return response.data;
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
-        console.error('❌ Error al obtener detalles del pago:', error.response?.data || error.message);
+        console.error(
+          '❌ Error al obtener detalles del pago:',
+          error.response?.data || error.message,
+        );
       } else {
         console.error('❌ Error desconocido:', error);
       }
