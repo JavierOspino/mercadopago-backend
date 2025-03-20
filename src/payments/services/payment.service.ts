@@ -16,7 +16,7 @@ export class PaymentService {
       amount,
       description,
       email,
-      paymentId: checkout.id, 
+      paymentId: checkout.id,
       status: 'pending',
     });
 
@@ -40,9 +40,23 @@ export class PaymentService {
       console.error('❌ No se pudo obtener información del pago.');
       return;
     }
-  
+
     console.log(`✅ Estado del pago en MercadoPago: ${paymentData.status}`);
-  
+
+    return await this.paymentRepo.updatePaymentStatus(paymentId, paymentData.status);
+  }
+
+  async updatePaymentStatus(paymentId: string) {
+    console.log(`🔄 Actualizando estado de pago: ${paymentId}`);
+
+    const paymentData = await this.mercadoPagoService.getPaymentDetails(paymentId);
+    if (!paymentData) {
+      console.error('❌ No se pudo obtener información del pago.');
+      return;
+    }
+
+    console.log(`✅ Estado del pago en MercadoPago: ${paymentData.status}`);
+
     return await this.paymentRepo.updatePaymentStatus(paymentId, paymentData.status);
   }
 }
